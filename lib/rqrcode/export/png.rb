@@ -42,7 +42,8 @@ module RQRCode
           :size => 120,
           :border_modules => 4,
           :file => false,
-          :module_px_size => 6
+          :module_px_size => 6,
+          :transparent => false
         }
         
         googleis = options.length == 0 || (options[:size] != nil)
@@ -57,6 +58,8 @@ module RQRCode
         border_px = nil
         png = nil
         
+        transparent = options[:transparent]
+        
         if googleis
           total_image_size = options[:size]
           border_modules = options[:border_modules]
@@ -67,8 +70,13 @@ module RQRCode
 
           remaining = total_image_size - img_size
           border_px = (remaining / 2.0).floor.to_i
-
-          png = ChunkyPNG::Image.new(total_image_size, total_image_size, fill)
+          
+          if !transparent
+            png = ChunkyPNG::Image.new(total_image_size, total_image_size, fill)
+          else
+            png = ChunkyPNG::Image.new(total_image_size, total_image_size, ChunkyPNG::Color::TRANSPARENT)
+          end
+          
         else
           border = options[:border_modules]
           total_border = border * 2
@@ -84,7 +92,11 @@ module RQRCode
           img_size = module_px_size * self.module_count
           total_img_size = img_size + total_border_px
 
-          png = ChunkyPNG::Image.new(total_img_size, total_img_size, fill)
+          if !transparent
+            png = ChunkyPNG::Image.new(total_image_size, total_image_size, fill)
+          else
+            png = ChunkyPNG::Image.new(total_image_size, total_image_size, ChunkyPNG::Color::TRANSPARENT)
+          end
         end
 
         self.modules.each_index do |x|
